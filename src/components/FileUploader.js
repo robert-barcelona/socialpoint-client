@@ -10,11 +10,11 @@ class FileUploader extends Component {
   }
 
   ADD_JOB = gql`
-      mutation AddJob($file: String!) {
-          addJob(file: $file) {
+      mutation AddJob($file: String!, $fileCrypt:String!) {
+          addJob(file: $file, fileCrypt: $fileCrypt) {
               id
               file
-              completed
+              status
           }
       }
   `;
@@ -45,8 +45,9 @@ class FileUploader extends Component {
     const url = `${process.env.REACT_APP_IMAGE_UPLOAD_SERVER}/upload`
     axios.post(url, formData, config)
       .then(response => {
-        console.log('file uploaded', response.toString())
-        return addJob({variables: {file: file.name}});
+        console.log('file uploaded', response)
+        const fileCrypt = response.data.file.split('/')[1]
+        return addJob({variables: {file:file.name, fileCrypt}});
       })
       .then(result => console.log('new job created', result.toString()))
       .catch(err => console.error('file upload error', err.toString()))
