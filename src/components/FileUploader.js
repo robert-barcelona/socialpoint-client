@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import axios from 'axios'
+import {uploadHandler} from "../api"
 import {Mutation} from 'react-apollo'
 import gql from 'graphql-tag'
 
@@ -25,42 +25,24 @@ class FileUploader extends Component {
     this.setState({file: event.target.files[0]})
   }
 
-
-  uploadHandler = (event, addJob) => {
-    event.preventDefault()
-    const file = this.state.file;
-    const formData = new FormData()
-    formData.append(
-      'xxzzy',
-      file,
-      file.name
-    )
-
-    const config = {
-      headers: {
-        'content-type': 'multipart/form-data'
-      }
+  uploadFile = async (addJob, file) => {
+    try {
+      await uploadHandler(addJob,file)
+    } catch(err) {
+      console.error('could not upload file', err.toString())
     }
-
-    const url = `${process.env.REACT_APP_IMAGE_UPLOAD_SERVER}/upload`
-    axios.post(url, formData, config)
-      .then(response => {
-        console.log('file uploaded', response)
-        const fileCrypt = response.data.file.split('/')[1]
-        return addJob({variables: {file:file.name, fileCrypt}});
-      })
-      .then(result => console.log('new job created', result.toString()))
-      .catch(err => console.error('file upload error', err.toString()))
   }
+
 
   render() {
 
+    const {state: {file}} = this
 
     return (
       <Mutation mutation={this.ADD_JOB}>
         {(addJob, {data}) => (
 
-          <form onSubmit={e => this.uploadHandler(e, addJob)}>
+          <form onSubmit={e => {e.preventDefault();this.uploadFile( addJob, file)}}>
             <input type="file" onChange={this.onChange}/>
             <button type="submit">Upload</button>
           </form>

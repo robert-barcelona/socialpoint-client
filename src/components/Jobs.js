@@ -1,12 +1,14 @@
 import React, {Component} from 'react'
-import axios from 'axios'
 import {Query} from 'react-apollo'
 import gql from 'graphql-tag'
+import {library} from '@fortawesome/fontawesome-svg-core'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faDownload, faFileDownload, faArrowAltCircleDown} from '@fortawesome/free-solid-svg-icons'
+import {downloadHandler} from '../api'
 
+library.add(faDownload, faFileDownload, faArrowAltCircleDown)
 
 class Jobs extends Component {
-
-
 
 
   JOBS_QUERY = gql`
@@ -20,6 +22,14 @@ class Jobs extends Component {
       }
   `
 
+  downloadFile = async (file,fileCrypt) => {
+    try {
+      await downloadHandler(file, fileCrypt)
+    } catch (err) {
+      console.error('file could not be downloaded:', err.toString())
+    }
+  }
+
   render() {
 
 
@@ -29,11 +39,11 @@ class Jobs extends Component {
           if (loading) return <div>Loading...</div>
           if (error) return <div>{`${error.toString()}`}</div>
           if (!data || !data.jobs) return <div>No jobs</div>
-          this.jobs = data.jobs // ugly, but no time to get into caching and Apollo Client
-          console.log(this.jobs)
           return (<ul>
-            {data.jobs.map(job => <li key={job.id}>Job ID: {job.id}, Image name: {job.fileCrypt}, Image
-              Source: {job.file}. Status: {job.status }</li>)}
+            {data.jobs.map(job => <li key={job.id}>Image: {job.file},
+              Status: {job.status} {job.status === 'COMPLETED' &&
+              <span onClick={e => {e.preventDefault();this.downloadFile(job.file, job.fileCrypt)}}>Click to download <FontAwesomeIcon
+                icon='arrow-alt-circle-down'/></span>}</li>)}
           </ul>)
         }
         }
