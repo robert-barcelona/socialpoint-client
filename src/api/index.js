@@ -15,7 +15,7 @@ export const uploadHandler = async (addJob, file) => {
     }
   }
 
-  const url = `${process.env.REACT_APP_IMAGE_UPLOAD_SERVER}/uploadx`
+  const url = `${process.env.REACT_APP_IMAGE_UPLOAD_SERVER}/upload`
 
   try {
     const response = await axios.post(url, formData, config)

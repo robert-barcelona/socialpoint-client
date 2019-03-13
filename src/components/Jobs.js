@@ -10,6 +10,10 @@ library.add(faDownload, faFileDownload, faArrowAltCircleDown)
 
 class Jobs extends Component {
 
+  state = {
+    downloadError: null
+  }
+
 
   JOBS_QUERY = gql`
       {
@@ -22,32 +26,55 @@ class Jobs extends Component {
       }
   `
 
-  downloadFile = async (file,fileCrypt) => {
+  downloadFile = async (file, fileCrypt) => {
     try {
       await downloadHandler(file, fileCrypt)
+      this.setState({downloadError: null})
+
     } catch (err) {
-      console.error('file could not be downloaded:', err.toString())
+      this.setState({downloadError: err.toString()})
     }
   }
 
   render() {
 
+    const {state: {downloadError}} = this
 
     return (
-      <Query query={this.JOBS_QUERY} pollInterval={1000}>
-        {({loading, error, data}) => {
-          if (loading) return <div>Loading...</div>
-          if (error) return <div>{`${error.toString()}`}</div>
-          if (!data || !data.jobs) return <div>No jobs</div>
-          return (<ul>
-            {data.jobs.map(job => <li key={job.id}>Image: {job.file},
-              Status: {job.status} {job.status === 'COMPLETED' &&
-              <span onClick={e => {e.preventDefault();this.downloadFile(job.file, job.fileCrypt)}}>Click to download <FontAwesomeIcon
-                icon='arrow-alt-circle-down'/></span>}</li>)}
-          </ul>)
-        }
-        }
-      </Query>
+      <div className='columns'>
+        <div className='column is-half'>
+
+          <Query query={this.JOBS_QUERY} pollInterval={1000}>
+            {({loading, error, data}) => {
+              if (loading) return <div>Loading...</div>
+
+              if (error) return <div className='message is-warning'>
+                <div className="message-header">
+                  {`${error.toString()}`}</div>
+              </div>
+
+              if (!data || !data.jobs) return <div>No jobs</div>
+              return (<div> {downloadError && <div className='message is-warning'>
+                <div className="message-header">
+                  {downloadError}</div>
+              </div>
+              }
+                <ul className='list'>
+                  {data.jobs.map(job => <li key={job.id}>Image: {job.file},
+                    Status: {job.status} {job.status === 'COMPLETED' &&
+                    <a className='list-item' onClick={e => {
+                      e.preventDefault();
+                      this.downloadFile(job.file, job.fileCrypt)
+                    }}>Click to download <FontAwesomeIcon
+                      icon='arrow-alt-circle-down'/></a>}</li>)}
+                </ul>
+              </div>)
+            }
+            }
+          </Query>
+        </div>
+
+      </div>
     )
 
 

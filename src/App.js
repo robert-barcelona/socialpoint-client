@@ -10,7 +10,7 @@ import {InMemoryCache} from 'apollo-cache-inmemory'
 
 import FileUploader from './components/FileUploader'
 import Jobs from './components/Jobs'
-
+import 'bulma/css/bulma.css'
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:4000'
@@ -31,11 +31,10 @@ class App extends Component {
   render() {
     return (
       <ApolloProvider client={client}>
-
-      <div className="App">
-        <FileUploader/>
-      </div>
-        <div><Jobs/></div>
+        <div className='container'>
+            <FileUploader/>
+     <Jobs/>
+        </div>
       </ApolloProvider>
 
     );
