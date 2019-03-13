@@ -31,14 +31,23 @@ export const uploadHandler = async (addJob, file) => {
 
 export const downloadHandler = async (file, fileCrypt) => {
   const config = {
-    responseType : 'document'
+    responseType: 'blob',
   }
-
 
   const url = `${process.env.REACT_APP_IMAGE_UPLOAD_SERVER}/download`
   try {
-    const response = await axios.post(url, {file, fileCrypt}, config)
+    const response = await axios.post(url, {
+      file,
+      fileCrypt,
+    }, config)
+    const fakeURL = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
     console.log(response)
+    link.href = fakeURL;
+    link.setAttribute('download', file); //or any other extension
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode.removeChild(link);
   } catch (err) {
     throw new Error(err.toString())
   }

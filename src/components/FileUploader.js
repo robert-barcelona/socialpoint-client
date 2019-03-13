@@ -6,7 +6,8 @@ import gql from 'graphql-tag'
 class FileUploader extends Component {
 
   state = {
-    file: null
+    file: null,
+    error: null,
   }
 
   ADD_JOB = gql`
