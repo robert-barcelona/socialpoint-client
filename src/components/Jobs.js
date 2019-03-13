@@ -4,6 +4,8 @@ import gql from 'graphql-tag'
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faDownload, faTrashAlt, faFileDownload, faArrowAltCircleDown} from '@fortawesome/free-solid-svg-icons'
+import  '../main.scss'
+
 import {downloadHandler} from '../api'
 
 library.add(faDownload, faTrashAlt, faFileDownload, faArrowAltCircleDown)
@@ -80,20 +82,20 @@ class Jobs extends Component {
               </div>
               }
                 <ul className='list'>
-                  {data.jobs.map(job => <li key={job.id}>Image: {job.file},
+                  {data.jobs.map(job => <li className='jobListItem has-text-warning has-background-link' key={job.id}>Image: {job.file},
                     Status: {job.status}
                     {job.status === 'COMPLETED' &&
                     <a href='#' className='list-item' onClick={e => {
                       e.preventDefault();
                       this.downloadFile(job.file, job.fileCrypt)
-                    }}>Click to download <FontAwesomeIcon
+                    }}>Download Image <FontAwesomeIcon
                       icon='arrow-alt-circle-down'/></a>}
                     <Mutation mutation={this.DELETE_JOB}>
                       {(deleteJob, {data, error}) => (
                         <a href='#' className='list-item' onClick={e => {
                           e.preventDefault();
                           this.deleteFile(deleteJob,job.id)
-                        }}><FontAwesomeIcon
+                        }}>Delete Job <FontAwesomeIcon
                           icon='trash-alt'/></a>
                       )}
 

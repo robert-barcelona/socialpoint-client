@@ -71,7 +71,7 @@ class FileUploader extends Component {
             this.uploadFile(e, addJob, file)
           }}>
             <div className="field">
-              <label className="label">Upload your image</label>
+              <label className=" is-size-3 has-text-primary label">Upload your image</label>
               <div className="control">
                 <input className="input" ref={this.inputRef} type="file" onChange={this.onChange}/>
               </div>

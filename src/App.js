@@ -11,6 +11,7 @@ import {InMemoryCache} from 'apollo-cache-inmemory'
 import FileUploader from './components/FileUploader'
 import Jobs from './components/Jobs'
 import 'bulma/css/bulma.css'
+import  './main.scss'
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:4000'
@@ -31,9 +32,18 @@ class App extends Component {
   render() {
     return (
       <ApolloProvider client={client}>
-        <div className='container'>
+        <div className=' hero'>
+        <div className=' hero-body is-size-2 has-text-warning has-background-link'>Nifty PNG->JPG Converter!</div>
+        </div>
+        <div className='columns'>
+          <div className='column is-one-fifth '></div>
+        <div className=' column is-one-third '>
             <FileUploader/>
-     <Jobs/>
+
+        </div>
+        <div className=' column  is-one-third'>
+          <Jobs/>
+        </div>
         </div>
       </ApolloProvider>
 
