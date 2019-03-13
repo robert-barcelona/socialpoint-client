@@ -1,17 +1,17 @@
 import React, {Component} from 'react'
-import {Query} from 'react-apollo'
+import {Query, Mutation} from 'react-apollo'
 import gql from 'graphql-tag'
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faDownload, faFileDownload, faArrowAltCircleDown} from '@fortawesome/free-solid-svg-icons'
+import {faDownload, faTrashAlt, faFileDownload, faArrowAltCircleDown} from '@fortawesome/free-solid-svg-icons'
 import {downloadHandler} from '../api'
 
-library.add(faDownload, faFileDownload, faArrowAltCircleDown)
+library.add(faDownload, faTrashAlt, faFileDownload, faArrowAltCircleDown)
 
 class Jobs extends Component {
 
   state = {
-    downloadError: null
+    apiError: null
   }
 
 
@@ -26,19 +26,39 @@ class Jobs extends Component {
       }
   `
 
+
+  DELETE_JOB = gql`
+      mutation DeleteJob($id: ID!) {
+          deleteJob(id: $id) {
+            status
+          }
+      }
+  `;
+
+
   downloadFile = async (file, fileCrypt) => {
     try {
       await downloadHandler(file, fileCrypt)
-      this.setState({downloadError: null})
+      this.setState({apiError: null})
 
     } catch (err) {
-      this.setState({downloadError: err.toString()})
+      this.setState({apiError: err.toString()})
+    }
+  }
+
+  deleteFile = async (deleteJob,id) => {
+    try {
+      console.log('id',id)
+      await deleteJob({variables: {id}});
+      this.setState({apiError: null})
+    } catch (err) {
+      this.setState({apiError: err.toString()})
     }
   }
 
   render() {
 
-    const {state: {downloadError}} = this
+    const {state: {apiError}} = this
 
     return (
       <div className='columns'>
@@ -54,19 +74,31 @@ class Jobs extends Component {
               </div>
 
               if (!data || !data.jobs) return <div>No jobs</div>
-              return (<div> {downloadError && <div className='message is-warning'>
+              return (<div> {apiError && <div className='message is-warning'>
                 <div className="message-header">
-                  {downloadError}</div>
+                  {apiError}</div>
               </div>
               }
                 <ul className='list'>
                   {data.jobs.map(job => <li key={job.id}>Image: {job.file},
-                    Status: {job.status} {job.status === 'COMPLETED' &&
-                    <a className='list-item' onClick={e => {
+                    Status: {job.status}
+                    {job.status === 'COMPLETED' &&
+                    <a href='#' className='list-item' onClick={e => {
                       e.preventDefault();
                       this.downloadFile(job.file, job.fileCrypt)
                     }}>Click to download <FontAwesomeIcon
-                      icon='arrow-alt-circle-down'/></a>}</li>)}
+                      icon='arrow-alt-circle-down'/></a>}
+                    <Mutation mutation={this.DELETE_JOB}>
+                      {(deleteJob, {data, error}) => (
+                        <a href='#' className='list-item' onClick={e => {
+                          e.preventDefault();
+                          this.deleteFile(deleteJob,job.id)
+                        }}><FontAwesomeIcon
+                          icon='trash-alt'/></a>
+                      )}
+
+                    </Mutation>
+                  </li>)}
                 </ul>
               </div>)
             }
