@@ -44,7 +44,8 @@ export const downloadHandler = async (file, fileCrypt) => {
     const link = document.createElement('a');
     console.log(response)
     link.href = fakeURL;
-    link.setAttribute('download', file); //or any other extension
+    const newFileName = `${file.split('.')[0]}.jpg`
+    link.setAttribute('download', newFileName); //or any other extension
     document.body.appendChild(link);
     link.click();
     link.parentNode.removeChild(link);
