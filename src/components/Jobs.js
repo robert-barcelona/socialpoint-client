@@ -66,7 +66,7 @@ class Jobs extends Component {
       <div className='columns'>
         <div className='column is-half'>
 
-          <Query query={this.JOBS_QUERY} pollInterval={1000}>
+          <Query query={this.JOBS_QUERY} pollInterval={500}>
             {({loading, error, data}) => {
               if (loading) return <div>Loading...</div>
 
